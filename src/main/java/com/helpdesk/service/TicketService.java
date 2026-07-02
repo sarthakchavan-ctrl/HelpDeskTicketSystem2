@@ -124,6 +124,26 @@ public class TicketService {
         return repository.findByAssignedTo(assignedTo);
     }
 
+    // Merge Duplicate Tickets
+    public String mergeDuplicateTickets(Integer originalTicketId, Integer duplicateTicketId) {
+
+        Ticket originalTicket = repository.findById(originalTicketId).orElse(null);
+        Ticket duplicateTicket = repository.findById(duplicateTicketId).orElse(null);
+
+        if (originalTicket == null) {
+            throw new RuntimeException("Original Ticket Not Found");
+        }
+
+        if (duplicateTicket == null) {
+            throw new RuntimeException("Duplicate Ticket Not Found");
+        }
+
+        repository.deleteById(duplicateTicketId);
+
+        return "Duplicate Ticket " + duplicateTicketId +
+                " merged into Ticket " + originalTicketId;
+    }
+
     // Common Method
     private void setDueDate(Ticket ticket) {
 
@@ -152,5 +172,32 @@ public class TicketService {
                     break;
             }
         }
+    }
+    // Clone Ticket
+    public Ticket cloneTicket(Integer ticketId, Integer newTicketId) {
+
+        Ticket existingTicket = repository.findById(ticketId).orElse(null);
+
+        if (existingTicket == null) {
+            throw new RuntimeException("Original Ticket Not Found");
+        }
+
+        if (repository.findById(newTicketId).isPresent()) {
+            throw new RuntimeException("New Ticket ID Already Exists");
+        }
+
+        Ticket clonedTicket = new Ticket();
+
+        clonedTicket.setTicketId(newTicketId);
+        clonedTicket.setTitle(existingTicket.getTitle());
+        clonedTicket.setDescription(existingTicket.getDescription());
+        clonedTicket.setStatus(existingTicket.getStatus());
+        clonedTicket.setPriority(existingTicket.getPriority());
+        clonedTicket.setCategory(existingTicket.getCategory());
+        clonedTicket.setSubcategory(existingTicket.getSubcategory());
+        clonedTicket.setAssignedTo(existingTicket.getAssignedTo());
+        clonedTicket.setDueDate(existingTicket.getDueDate());
+
+        return repository.save(clonedTicket);
     }
 }

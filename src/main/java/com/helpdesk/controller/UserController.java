@@ -64,4 +64,15 @@ public class UserController {
         service.deleteUser(id);
         return "User Deleted Successfully";
     }
+
+    // CHANGE PASSWORD
+    @PutMapping("/change-password")
+    public String changePassword(@RequestBody LoginRequest request) {
+
+        return service.changePassword(
+                request.getEmail(),
+                request.getPassword(),
+                request.getNewPassword()
+        );
+    }
 }

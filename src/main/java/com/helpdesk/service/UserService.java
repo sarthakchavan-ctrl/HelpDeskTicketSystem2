@@ -20,9 +20,11 @@ public class UserService {
 
     // CREATE USER
     public User createUser(User user) {
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setStatus("ACTIVE");
         user.setCreatedDate(LocalDate.now());
+
         return userRepository.save(user);
     }
 
@@ -31,17 +33,17 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    // GET BY ID
+    // GET USER BY ID
     public User getUserById(Integer id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    // GET BY EMPLOYEE ID
+    // GET USER BY EMPLOYEE ID
     public User getByEmployeeId(String employeeId) {
         return userRepository.findByEmployeeId(employeeId);
     }
 
-    // UPDATE BY EMPLOYEE ID
+    // UPDATE USER
     public User updateByEmployeeId(String employeeId, User user) {
 
         User existing = userRepository.findByEmployeeId(employeeId);
@@ -65,7 +67,7 @@ public class UserService {
         return userRepository.save(existing);
     }
 
-    // DELETE BY EMPLOYEE ID
+    // DELETE USER BY EMPLOYEE ID
     public String deleteByEmployeeId(String employeeId) {
 
         User user = userRepository.findByEmployeeId(employeeId);
@@ -75,10 +77,11 @@ public class UserService {
         }
 
         userRepository.delete(user);
+
         return "User deleted successfully";
     }
 
-    // DELETE BY ID
+    // DELETE USER BY ID
     public void deleteUser(Integer id) {
         userRepository.deleteById(id);
     }
@@ -97,5 +100,27 @@ public class UserService {
         }
 
         return "Invalid password";
+    }
+
+    // CHANGE PASSWORD
+    public String changePassword(String email,
+                                 String oldPassword,
+                                 String newPassword) {
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            return "User not found";
+        }
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return "Old password is incorrect";
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        userRepository.save(user);
+
+        return "Password changed successfully";
     }
 }

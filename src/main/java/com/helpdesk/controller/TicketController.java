@@ -86,4 +86,21 @@ public class TicketController {
     public List<Ticket> getTicketsByAssignedTo(@PathVariable String assignedTo) {
         return service.getTicketsByAssignedTo(assignedTo);
     }
+
+    // Merge Duplicate Tickets
+    @DeleteMapping("/merge")
+    public String mergeDuplicateTickets(
+            @RequestParam Integer originalTicketId,
+            @RequestParam Integer duplicateTicketId) {
+
+        return service.mergeDuplicateTickets(originalTicketId, duplicateTicketId);
+    }
+    // Clone Ticket
+    @PostMapping("/clone/{ticketId}")
+    public Ticket cloneTicket(
+            @PathVariable Integer ticketId,
+            @RequestParam Integer newTicketId) {
+
+        return service.cloneTicket(ticketId, newTicketId);
+    }
 }
