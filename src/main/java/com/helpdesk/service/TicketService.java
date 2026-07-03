@@ -1,5 +1,5 @@
 package com.helpdesk.service;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,16 +92,14 @@ public class TicketService {
     }
 
     // Bulk Update Tickets
+    @Transactional
     public List<Ticket> bulkUpdateTickets(List<Ticket> tickets) {
 
         for (Ticket ticket : tickets) {
-
             setDueDate(ticket);
-
-            repository.save(ticket);
         }
 
-        return tickets;
+        return repository.saveAll(tickets);
     }
 
     // Search By Status
@@ -145,7 +143,13 @@ public class TicketService {
     }
 
     // Common Method
+    // Common Method
     private void setDueDate(Ticket ticket) {
+
+        // Keep the due date if it was already provided
+        if (ticket.getDueDate() != null) {
+            return;
+        }
 
         if (ticket.getPriority() != null) {
 
