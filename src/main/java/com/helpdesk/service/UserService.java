@@ -4,6 +4,7 @@ import com.helpdesk.model.User;
 import com.helpdesk.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.helpdesk.config.JwtUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,6 +18,8 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     // CREATE USER
     public User createUser(User user) {
@@ -96,7 +99,10 @@ public class UserService {
         }
 
         if (passwordEncoder.matches(password, user.getPassword())) {
-            return "Login successful";
+
+            String token = jwtUtil.generateToken(user.getEmail());
+
+            return token;
         }
 
         return "Invalid password";

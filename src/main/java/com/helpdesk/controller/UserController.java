@@ -24,6 +24,9 @@ public class UserController {
     // LOGIN
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest request) {
+
+        System.out.println("Login API Called");
+
         return service.login(request.getEmail(), request.getPassword());
     }
 
