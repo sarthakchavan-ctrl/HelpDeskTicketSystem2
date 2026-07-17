@@ -1,14 +1,14 @@
 package com.helpdesk.config;
-import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.stereotype.Component;
-
-import java.util.Date;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
@@ -25,7 +25,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .setExpiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                 .signWith(key)
                 .compact();
     }

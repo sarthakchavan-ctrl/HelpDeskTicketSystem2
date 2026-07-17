@@ -1,12 +1,21 @@
 package com.helpdesk.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.helpdesk.model.LoginRequest;
 import com.helpdesk.model.User;
 import com.helpdesk.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -30,38 +39,47 @@ public class UserController {
         return service.login(request.getEmail(), request.getPassword());
     }
 
+    // LOGOUT
+    @PostMapping("/logout")
+    public String logout(@RequestHeader("Authorization") String authHeader) {
+
+        String token = authHeader.substring(7); // Remove "Bearer "
+
+        return service.logout(token);
+    }
+
     // GET ALL USERS
     @GetMapping
     public List<User> getAllUsers() {
         return service.getAllUsers();
     }
 
-    // GET BY ID
+    // GET USER BY ID
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Integer id) {
         return service.getUserById(id);
     }
 
-    // GET BY EMPLOYEE ID
+    // GET USER BY EMPLOYEE ID
     @GetMapping("/employee/{employeeId}")
     public User getByEmployeeId(@PathVariable String employeeId) {
         return service.getByEmployeeId(employeeId);
     }
 
-    // UPDATE BY EMPLOYEE ID
+    // UPDATE USER BY EMPLOYEE ID
     @PutMapping("/employee/{employeeId}")
     public User updateByEmployeeId(@PathVariable String employeeId,
                                    @RequestBody User user) {
         return service.updateByEmployeeId(employeeId, user);
     }
 
-    // DELETE BY EMPLOYEE ID
+    // DELETE USER BY EMPLOYEE ID
     @DeleteMapping("/employee/{employeeId}")
     public String deleteByEmployeeId(@PathVariable String employeeId) {
         return service.deleteByEmployeeId(employeeId);
     }
 
-    // DELETE BY ID
+    // DELETE USER BY ID
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable Integer id) {
         service.deleteUser(id);

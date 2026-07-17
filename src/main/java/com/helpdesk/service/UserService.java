@@ -1,10 +1,11 @@
 package com.helpdesk.service;
 
+import com.helpdesk.config.JwtUtil;
 import com.helpdesk.model.User;
 import com.helpdesk.repository.UserRepository;
+import com.helpdesk.service.ActiveTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.helpdesk.config.JwtUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,8 +19,12 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private ActiveTokenService activeTokenService;
 
     // CREATE USER
     public User createUser(User user) {
@@ -98,14 +103,32 @@ public class UserService {
             return "User not found";
         }
 
-        if (passwordEncoder.matches(password, user.getPassword())) {
-
-            String token = jwtUtil.generateToken(user.getEmail());
-
-            return token;
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            return "Invalid password";
         }
 
-        return "Invalid password";
+        // Duplicate Login Check
+        if (activeTokenService.isLoggedIn(email)) {
+            return "User already logged in";
+        }
+
+        // Generate JWT Token
+        String token = jwtUtil.generateToken(email);
+
+        // Save Active Session
+        activeTokenService.saveToken(email, token);
+
+        return token;
+    }
+
+    // LOGOUT
+    public String logout(String token) {
+
+        String email = jwtUtil.extractUsername(token);
+
+        activeTokenService.logout(email);
+
+        return "Logout Successful";
     }
 
     // CHANGE PASSWORD

@@ -1,18 +1,26 @@
 package com.helpdesk.service;
-import org.springframework.transaction.annotation.Transactional;
-import com.helpdesk.model.Ticket;
-import com.helpdesk.repository.TicketRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.helpdesk.model.Ticket;
+import com.helpdesk.repository.TicketRepository;
 
 @Service
 public class TicketService {
 
+
+
+
+    
+
     @Autowired
     private TicketRepository repository;
+
+    
 
     // Create Ticket
     public Ticket createTicket(Ticket ticket) {
@@ -205,3 +213,7 @@ public class TicketService {
         return repository.save(clonedTicket);
     }
 }
+
+
+
+
