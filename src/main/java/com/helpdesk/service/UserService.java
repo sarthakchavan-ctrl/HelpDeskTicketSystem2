@@ -1,15 +1,15 @@
 package com.helpdesk.service;
 
-import com.helpdesk.config.JwtUtil;
-import com.helpdesk.model.User;
-import com.helpdesk.repository.UserRepository;
-import com.helpdesk.service.ActiveTokenService;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.helpdesk.config.JwtUtil;
+import com.helpdesk.model.User;
+import com.helpdesk.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -95,31 +95,50 @@ public class UserService {
     }
 
     // LOGIN
-    public String login(String email, String password) {
+public String login(String email, String password) {
 
-        User user = userRepository.findByEmail(email);
+    User user = userRepository.findByEmail(email);
 
-        if (user == null) {
-            return "User not found";
-        }
-
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            return "Invalid password";
-        }
-
-        // Duplicate Login Check
-        if (activeTokenService.isLoggedIn(email)) {
-            return "User already logged in";
-        }
-
-        // Generate JWT Token
-        String token = jwtUtil.generateToken(email);
-
-        // Save Active Session
-        activeTokenService.saveToken(email, token);
-
-        return token;
+    if (user == null) {
+        return "User not found";
     }
+
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+        return "Invalid password";
+    }
+
+    // Check if user is already logged in
+    if (activeTokenService.isLoggedIn(email)) {
+
+        String oldToken = activeTokenService.getToken(email);
+
+        try {
+
+            // If token is expired, remove old session
+            if (jwtUtil.isTokenExpired(oldToken)) {
+
+                activeTokenService.logout(email);
+
+            } else {
+
+                return "User already logged in";
+            }
+
+        } catch (Exception e) {
+
+            // Invalid/Expired token
+            activeTokenService.logout(email);
+        }
+    }
+
+    // Generate new JWT Token
+    String token = jwtUtil.generateToken(email);
+
+    // Save new active session
+    activeTokenService.saveToken(email, token);
+
+    return token;
+}
 
     // LOGOUT
     public String logout(String token) {

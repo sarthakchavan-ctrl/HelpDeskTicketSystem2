@@ -46,4 +46,15 @@ public class JwtUtil {
     public boolean validateToken(String token, String email) {
         return extractUsername(token).equals(email);
     }
+    // Check if token is expired
+public boolean isTokenExpired(String token) {
+
+    Claims claims = Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+
+    return claims.getExpiration().before(new Date());
+}
 }
