@@ -154,37 +154,34 @@ public class TicketService {
     // Common Method
     private void setDueDate(Ticket ticket) {
 
-        // Keep the due date if it was already provided
-        if (ticket.getDueDate() != null) {
-            return;
-        }
-
-        if (ticket.getPriority() != null) {
-
-            switch (ticket.getPriority().toUpperCase()) {
-
-                case "LOW":
-                    ticket.setDueDate(LocalDate.now().plusDays(7));
-                    break;
-
-                case "MEDIUM":
-                    ticket.setDueDate(LocalDate.now().plusDays(5));
-                    break;
-
-                case "HIGH":
-                    ticket.setDueDate(LocalDate.now().plusDays(2));
-                    break;
-
-                case "CRITICAL":
-                    ticket.setDueDate(LocalDate.now().plusDays(1));
-                    break;
-
-                default:
-                    ticket.setDueDate(LocalDate.now().plusDays(7));
-                    break;
-            }
-        }
+    if (ticket.getPriority() == null) {
+        ticket.setDueDate(LocalDate.now().plusDays(7));
+        return;
     }
+
+    switch (ticket.getPriority().toUpperCase()) {
+
+        case "LOW":
+            ticket.setDueDate(LocalDate.now().plusDays(7));
+            break;
+
+        case "MEDIUM":
+            ticket.setDueDate(LocalDate.now().plusDays(5));
+            break;
+
+        case "HIGH":
+            ticket.setDueDate(LocalDate.now().plusDays(2));
+            break;
+
+        case "CRITICAL":
+            ticket.setDueDate(LocalDate.now().plusDays(1));
+            break;
+
+        default:
+            ticket.setDueDate(LocalDate.now().plusDays(7));
+            break;
+    }
+}
     // Clone Ticket
     public Ticket cloneTicket(Integer ticketId, Integer newTicketId) {
 
